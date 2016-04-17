@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>html5绘制天空图</title>
+	<style>
+		#skyPic{
+			width: 390px;
+			height: 390px;
+			border:1px solid #ccc;
+		}
+	</style>
+</head>
+<body>
+
+	<canvas id="skyPic" width="390" height="390"></canvas>
+	<script>
+		/*
+		* author:ls
+		* email:liusaint@gmail.com
+		* date:2015年10月
+		*/
+		// 绘制背景
+		function drawBaseSky(cxt){
+
+			cxt.clearRect(0,0,390,390);//清空画布
+
+			var RADIUS = 180;//半径
+			
+			cxt.save();	//保存状态
+
+			cxt.translate(15,15);//坐标原点移动，留出边界值，让可能出现在最外层的信息能显示
+
+			//绘制背景
+			cxt.beginPath();
+			cxt.fillStyle = 'rgb(242,242,242)';
+			cxt.arc(RADIUS, RADIUS, RADIUS, 0, Math.PI*2, false);
+			cxt.fill();
+
+			cxt.beginPath();
+			cxt.fillStyle ='white';
+			cxt.arc(RADIUS, RADIUS, RADIUS*2/3, 0, Math.PI*2, false);
+			cxt.fill();
+
+			cxt.beginPath();
+			cxt.fillStyle = 'rgb(242,242,242)';
+			cxt.arc(RADIUS, RADIUS, RADIUS/3, 0, Math.PI*2, false);
+			cxt.fill();
+
+			cxt.save();	//保存状态
+
+			//通过旋转的方式画圆中的分割线
+			cxt.beginPath();
+			cxt.strokeStyle = 'rgb(220,220,220)';
+			cxt.translate(RADIUS,RADIUS);
+			for(var i=0;i<12;i++){
+				cxt.rotate(Math.PI/180*30);
+				cxt.moveTo(0,0);
+				cxt.lineTo(0,RADIUS);
+			}
+			cxt.stroke();
+
+			cxt.restore();
+			cxt.restore();
+
+		}
+		//绘制数据分布
+		function drawSkyPosition(drawData,cxt){
+			var color ={
+				"1":"rgb(173,152,12)", 
+				"2":"rgb(75,164,259)", 
+				"3":"rgb(226,120,228)",
+				"4":"rgb(117,173,61)", 
+				"5":"rgb(230,139,55)", 
+				"6":"rgb(61,168,161)"
+			}; 
+			// var cxt = document.getElementById('skyPic').getContext("2d");
+			var radius = 180;//半径
+			var cosLen,x,y;
+
+			cxt.save();
+			cxt.translate(15,15);
+			cxt.translate(radius,radius);
+
+			cxt.font = "bold 14px Arial";
+			cxt.textAlign = "center";
+			cxt.textBaseline = "middle";
+
+			for(var i=0,dataLen = drawData.length;i<dataLen;i++){
+				cxt.beginPath();
+				cxt.fillStyle = color[drawData[i].type];
+
+				//关键代码。求圆心坐标。coslen是求出来的该点到圆心的距离。
+				var cosLen = Math.cos(drawData[i].elevation*Math.PI/180)*radius;
+				y = Math.cos(drawData[i].azimuth*Math.PI/180)* cosLen;
+				x = Math.sin(drawData[i].azimuth*Math.PI/180)* cosLen;
+
+				cxt.arc(x,-y , 14, 0, Math.PI*2, false);//在坐标点绘制圆
+				cxt.fill();
+
+				cxt.beginPath();
+				cxt.fillStyle ='white';
+				cxt.fillText(drawData[i].num, x, -y);//在坐标点写文字卫星号
+			}
+			cxt.restore();
+		}
+		function getRandom(n){
+			return Math.floor(Math.random()*n+1);
+		}
+		//elevation仰角 azimuth方位角。这里生成随机数据。
+		function createBaseDate(){
+			drawData = [];
+			var item 
+			for(var i = 0 ;i<15;i++){
+				item = {"type":getRandom(5)+1,"num":getRandom(99), "elevation":getRandom(89), "azimuth":getRandom(360) };
+				drawData.push(item);
+			}
+
+		}
+
+		function newSky(){
+			drawBaseSky(cxt);
+			createBaseDate();
+			drawSkyPosition(drawData,cxt);
+		}
+
+		//定时刷新
+		var drawData = [];
+		var cxt = document.getElementById('skyPic').getContext("2d");
+		newSky()
+		setInterval(function(){
+			newSky();
+		},1500)
+	</script>
+</body>
