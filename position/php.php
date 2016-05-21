@@ -8,20 +8,23 @@
 
 
 //测试数据
-$point[0]['L'] = 110.83717794;
-$point[0]['B'] = 13;
-$point[0]['Name'] = 'pt1';
-$point[1]['L'] = 113;
-$point[1]['B'] = 24;
-$point[1]['Name'] = 'pt2';
-$point[2]['L'] = 105.794566000;
-$point[2]['B'] = 20;
-$point[2]['Name'] = 'pt3';
-$point[3]['L'] = 120;
-$point[3]['B'] = 17;
-$point[3]['Name'] = 'pt4';
+// $point[0]['L'] = 110.83717794;
+// $point[0]['B'] = 13;
+// $point[0]['Name'] = 'pt1';
+// $point[1]['L'] = 113;
+// $point[1]['B'] = 24;
+// $point[1]['Name'] = 'pt2';
+// $point[2]['L'] = 105.794566000;
+// $point[2]['B'] = 20;
+// $point[2]['Name'] = 'pt3';
+// $point[3]['L'] = 120;
+// $point[3]['B'] = 17;
+// $point[3]['Name'] = 'pt4';
 
+$point = $_GET['points'];
+// var_dump($point);
 
+// exit;
 function draw($point)
 {
 	//1.计算四个范围。

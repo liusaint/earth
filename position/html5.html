@@ -3,126 +3,67 @@
 <head>
 	<meta charset="utf-8">
 	<title>用html5绘制坐标点相对位置</title>
+	<link rel="stylesheet" href="html5.css">
 </head>
+<body>
+	<form>
+		<div class="form-group">
+			<label for="num">坐标点数量：</label>
+			<input name="num" class="form-control" value = '4'>
+			<input value = '确定' id="createInput" type="button">
+		</div>
 
-<style>
-	canvas{
-		border: 1px solid #ccc;
-	}
-</style>
-<script type="text/javascript">
-	/*
-	* author:ls
-	* email:liusaint@gmail.com
-	* date:2015年6月
-	*/
-	var points = 
-	[
-	{L:110.83717794,B:12,Name:'pt1'},
-	{L:113,B:24,Name:'pt2'},
-	{L:105.794566000,B:20,Name:'pt3'},
-	{L:120,B:17,Name:'pt4'}
-	]
+		<div class="form-group point-group">
+			<label >坐标点1：</label>
+			<input name="points[0][Name]" class="form-control" value = 'p1'  placeholder="请输入点名">
+			<input name="points[0][L]" class="form-control" value = "110" placeholder="请输入经度-180至180-180至180">
+			<input name="points[0][B]" class="form-control" value = "12"  placeholder="请输入纬度-90至90">
+		</div>
 
-	function draw (points) {
+		<div class="form-group point-group">
+			<label >坐标点2：</label>
+			<input name="points[1][Name]" class="form-control" value = 'p2'  placeholder="请输入点名">
+			<input name="points[1][L]" class="form-control" value = '113' placeholder="请输入经度-180至180">
+			<input name="points[1][B]" class="form-control" value = '24'  placeholder="请输入纬度-90至90">
+		</div>
 
-	//坐标区域长或宽，最大为250px。判断标准：坐标经度差与纬度差，大的那个为250px。再根据经度差与纬度差的比例计算出短的一边有多少px。
-	var MAXSIZE = 300; 
-	var maxL = points[0]['L'];
-	var maxB=points[0]['B'];
-	var minL = points[0]['L'];
-	var minB=points[0]['B'];
+		<div class="form-group point-group">
+			<label >坐标点3：</label>
+			<input name="points[2][Name]" class="form-control" value = 'p3'  placeholder="请输入点名">
+			<input name="points[2][L]" class="form-control" value = '105' placeholder="请输入经度-180至180">
+			<input name="points[2][B]" class="form-control" value = '20'  placeholder="请输入纬度-90至90">
+		</div>
 
-	var value;
+		<div class="form-group point-group">
+			<label >坐标点4：</label>
+			<input name="points[3][Name]" class="form-control" value = 'p4'  placeholder="请输入点名">
+			<input name="points[3][L]" class="form-control" value = '120' placeholder="请输入经度-180至180">
+			<input name="points[3][B]" class="form-control" value = '17'  placeholder="请输入纬度-90至90">
+		</div>
 
-	for(var i=0,pointsLen=points.length;i<pointsLen;i++){
-		value = points[i];
-		maxL = maxL <value['L']?value['L'] :maxL;
-		maxB = maxB <value['B']?value['B'] :maxB;
-		minL = minL  > value['L']?value['L'] :minL;
-		minB = minB >value['B']?value['B'] :minB;
-	}
+		<div class="form-group">
+			<input value = '见证一下' id="createImg" type="button">
+		</div>
+	</form>
 
-	var diffL = maxL - minL;//经度差
-	var diffB = maxB - minB;//纬度差
+	<div class="clearfix">
+		<div class="pic-group"> 
+			<h4>HTML5生成</h4>
+			<canvas id="myCanvas" width="350" height="350"></canvas>
+		</div>
+		<div class="pic-group"> 
+			<h4>PHP生成</h4>
+			<img src = '' id="phpPos" >
+		</div>
+	</div>
+	<h4>百度地图生成</h4>
+	<div id="mapDiv"></div>
 
-	var width,height,Rate,diff;
-	//计算坐标区域height width;
+	
+	<script src="http://apps.bdimg.com/libs/jquery/1.8.1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=YWdGplhYjUGQ3GtpKNeuTM2S"></script>
+	<script type="text/javascript" src="pos.js"></script>
+	<script type="text/javascript" src="html5.js"></script>
 
-	if(diffL == 0){
-		width =MAXSIZE;
-		height = MAXSIZE;
-		Rate = MAXSIZE/parseFloat(diffB);
-	}
-	else if (diffB == 0) {
-		width =MAXSIZE;
-		height = MAXSIZE;
-		Rate = MAXSIZE/parseFloat(diffL);
-	}else if(diffL >= diffB){
-		diff = diffL;
-		width = MAXSIZE;
-		Rate = MAXSIZE/parseFloat(diffL);//单位坐标的有多少个px值。
-		height = diffB/diffL*MAXSIZE;
-	}else {
-		diff = diffB;
-		height = MAXSIZE;
-		Rate = MAXSIZE/parseFloat(diffB);//单位坐标的有多少个px值。
-		width = diffL/diffB*MAXSIZE;
-	}
-
-
-
-	var ctx = document.getElementById("myCanvas").getContext("2d");
-
-	ctx.translate(20,20);//多出来的40是用来防止名字，以及点上的圆点显示不下
-
-
-	// 根据B,L计算像素位置。计算应该有px。多出来的6，和10，表示所有坐标都向右移动6px,向下移动10px,也是避免基站名和圆点显示不下。
-	for(var k=0,pointsLen=points.length;k<pointsLen;k++){
-		value = points[k];
-		if(diffL == 0){
-			points[k]['Lpx']  =MAXSIZE/2;
-			points[k]['Bpx']  = parseInt(height - (value['B'] - minB)*Rate);
-		}
-		else if (diffB == 0) {
-			points[k]['Lpx'] =parseInt((value['L'] - minL)* Rate);
-			points[k]['Bpx'] = MAXSIZE/2;
-		} else {
-			points[k]['Lpx'] =  parseInt((value['L'] - minL)* Rate);
-			points[k]['Bpx'] = parseInt(height - (value['B'] - minB)*Rate);
-		}
-	}
-
-	ctx.font = "bold 14px Arial";
-	ctx.textAlign = "left";
-	ctx.textBaseline = "middle";
-
-	for(var x=0,pointsLen=points.length;x<pointsLen;x++){
-		value = points[x];
-		i = x +1;
-		ctx.strokeStyle='black';
-		while (i<pointsLen) {
-			ctx.beginPath();
-			ctx.moveTo(value['Lpx'] , value['Bpx']);
-			ctx.lineTo(points[i]['Lpx'],  points[i]['Bpx']);
-			ctx.stroke();
-			i++;
-		}
-		ctx.beginPath();
-		ctx.fillStyle ='black';
-		ctx.fillText(value.Name, value['Lpx']+5, value['Bpx']);
-
-		ctx.fillStyle = 'rgb(29,143,254)';
-		ctx.beginPath();
-		ctx.arc(value['Lpx'] , value['Bpx'] , 5, 0, Math.PI*2, false);
-		ctx.fill();
-
-	}
-
-}
-</script>
-
-<body onload="draw(points)">
-	<canvas id="myCanvas" width="350" height="350"></canvas>
 </body>
 </html>
