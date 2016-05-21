@@ -37,7 +37,7 @@ $("#createInput").click(function(event) {
 	}else{
 		addLen = num - oldnum;
 		for (i = 0; i < addLen; i++) {
-			item = '<div class="form-group point-group"><label >坐标点'+(oldnum+i+1)+'：</label> <input name="points['+(oldnum+i)+'][Name]" class="form-control"  placeholder="请输入点名"> <input name="points['+(oldnum+i)+'][L]" class="form-control" placeholder="请输入经度-180至180-180至180"> <input name="points['+(oldnum+i)+'][B]" class="form-control"  placeholder="请输入纬度-90至90"> </div>';
+			item = '<div class="form-group point-group"><label >坐标点'+(oldnum+i+1)+'：</label> <input name="points['+(oldnum+i)+'][Name]" class="form-control"  placeholder="请输入点名"> <input name="points['+(oldnum+i)+'][L]" class="form-control" placeholder="请输入经度-180至180"> <input name="points['+(oldnum+i)+'][B]" class="form-control"  placeholder="请输入纬度-90至90"> </div>';
 			html+=item;
 		}
 	}
